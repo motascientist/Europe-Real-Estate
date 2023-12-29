@@ -109,7 +109,8 @@ class RealEstate:
                "links":self.link_ls}
 
         df = pd.DataFrame(dic)
-        df.to_csv(f"{self.district}_{self.today}.csv")
+        df.to_csv("/home/the-lord/Documents/Europe-Real-Estate/data/{}_{}.csv".format(self.district, self.today), index=False)
+
 
 if __name__=='__main__':
 
