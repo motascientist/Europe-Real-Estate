@@ -3,6 +3,7 @@ from selenium import webdriver
 import random
 from bs4 import BeautifulSoup
 import pandas as pd
+from datetime import date
 
 class RealEstate:
 
@@ -10,15 +11,19 @@ class RealEstate:
         self.district = district
         self.page_number = 1  # Start from the first page
         self.max_pages = max_pages-1  # Set the maximum number of pages
-        self.font_base = f'https://www.immobiliare.it/en/vendita-case/{district}/?pag='
+        self.font_base = f'https://www.immobiliare.it/en/vendita-case/milano/{self.district}/?pag='
         self.driver = self.settings()
 
+        self.day = []
+        self.district_ls = []
         self.description_ls = []
         self.rooms_ls = []
         self.m2_ls = []
         self.bathroom_ls = []
         self.price_ls = []
         self.link_ls = []
+
+        self.today = date.today()
 
     def settings(self):
         chrome_driver_path = "/usr/bin/chromedriver"
@@ -41,6 +46,7 @@ class RealEstate:
         return webdriver.Chrome(options=chrome_options)
 
     def collect_data(self):
+
         while True:
             font = f'{self.font_base}{self.page_number}'
             self.driver.get(font)
@@ -53,6 +59,9 @@ class RealEstate:
                 # Break the loop if there's no more data or reached the maximum pages
                 break
             for data in informations:
+
+                self.day.append(self.today)
+                self.bathroom_ls(self.district)
                 description = data.find("a",attrs={"class":"in-reListCard__title"})
                 features = data.find_all("li", attrs={"class": "nd-list__item in-feat__item"})
                 if len(features) >= 3:
@@ -90,7 +99,9 @@ class RealEstate:
 
     def DataFrame(self):
         
-        dic = {"description":self.description_ls,
+        dic = {"day":self.day,
+               "district":self.district_ls,
+               "description":self.description_ls,
                "rooms":self.rooms_ls,
                "m2":self.m2_ls,
                "bathrooms":self.bathroom_ls,
@@ -98,10 +109,14 @@ class RealEstate:
                "links":self.link_ls}
 
         df = pd.DataFrame(dic)
-        df.to_csv(f"{self.district}.csv")
-
+        df.to_csv(f"{self.district}_{self.today}.csv")
 
 if __name__=='__main__':
-    real_state = RealEstate('milano',80)
-    real_state.collect_data()
-    real_state.DataFrame()
+
+    medaglie_d_oro = RealEstate('porta-romana-medaglie-d-oro',10)
+    medaglie_d_oro.collect_data()
+    medaglie_d_oro.DataFrame()
+
+    cadore_montenero = RealEstate('porta-romana-cadore-montenero',18)
+    cadore_montenero.collect_data()
+    cadore_montenero.DataFrame()
