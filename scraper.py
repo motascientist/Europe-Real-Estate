@@ -4,6 +4,7 @@ import random
 from bs4 import BeautifulSoup
 import pandas as pd
 from datetime import date
+from urllib.parse import urlparse
 
 class RealEstate:
 
@@ -61,7 +62,7 @@ class RealEstate:
             for data in informations:
 
                 self.day.append(self.today)
-                self.bathroom_ls(self.district)
+                self.district_ls.append(self.district)
                 description = data.find("a",attrs={"class":"in-reListCard__title"})
                 features = data.find_all("li", attrs={"class": "nd-list__item in-feat__item"})
                 if len(features) >= 3:
@@ -109,6 +110,18 @@ class RealEstate:
                "links":self.link_ls}
 
         df = pd.DataFrame(dic)
+
+        # Função para extrair o último número da URL
+        def extract_house_id(url):
+            parsed_url = urlparse(url)
+            path_segments = parsed_url.path.split('/')
+            for segment in reversed(path_segments):
+                if segment.isdigit():
+                    return int(segment)
+            return None
+
+        # Aplicar a função à coluna 'links' para criar a coluna 'house_id'
+        df['house_id'] = df['links'].apply(extract_house_id)
         df.to_csv("/home/the-lord/Documents/Europe-Real-Estate/data/{}_{}.csv".format(self.district, self.today), index=False)
 
 
