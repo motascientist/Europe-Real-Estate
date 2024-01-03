@@ -95,8 +95,8 @@ class RealEstate:
 
                 self.price_ls.append(price.text)
                 self.link_ls.append(link['href'])
-
             self.page_number += 1
+        self.driver.close()
 
     def DataFrame(self):
         
@@ -122,7 +122,7 @@ class RealEstate:
 
         # Aplicar a função à coluna 'links' para criar a coluna 'house_id'
         df['house_id'] = df['links'].apply(extract_house_id)
-        df.to_csv("/home/the-lord/Documents/Europe-Real-Estate/data/{}_{}.csv".format(self.district, self.today), index=False)
+        df.to_csv("/home/the-lord/Documents/Europe-Real-Estate/data_treatment/{}_{}.csv".format(self.district, self.today), index=False)
 
 
 if __name__=='__main__':
@@ -131,6 +131,6 @@ if __name__=='__main__':
     medaglie_d_oro.collect_data()
     medaglie_d_oro.DataFrame()
 
-    cadore_montenero = RealEstate('porta-romana-cadore-montenero',18)
+    cadore_montenero = RealEstate('porta-romana-cadore-montenero',17)
     cadore_montenero.collect_data()
     cadore_montenero.DataFrame()
