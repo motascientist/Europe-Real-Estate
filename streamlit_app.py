@@ -19,14 +19,21 @@ eur_to_brl = yf.download('EURBRL=X')['Close'][-1]
 # Streamlit settings
 st.set_page_config(page_title='Real Estate App', page_icon=':house:', layout='wide')
 
-# Sidebar for price selection
-selected_price = st.sidebar.selectbox('Select a Price:', sorted(df['price'].unique()))
+# Sidebar for district selection
+selected_district = st.sidebar.selectbox('Select a District:', df['district'].unique())
 
-# Sidebar for date selection with reversed order
+# Filtrar os preços com base no distrito selecionado
+prices_in_selected_district = df[df['district'] == selected_district]['price'].unique()
+
+# Sidebar para seleção de preço, adaptado aos preços do distrito selecionado
+selected_price = st.sidebar.selectbox('Select a Price:', sorted(prices_in_selected_district))
+
+# Sidebar para date selection with reversed order
 selected_date = st.sidebar.selectbox('Select a Date:', sorted(df['day'].unique(), reverse=True))
 
-# Filter the DataFrame to find all rows corresponding to the selected price and date
-selected_rows = df.query('price == @selected_price and day == @selected_date')
+# Filter the DataFrame to find all rows corresponding to the selected price, date, and district
+selected_rows = df[(df['price'] == selected_price) & (df['day'] == selected_date) & (df['district'] == selected_district)]
+
 
 # Display information based on the selected price and date
 if not selected_rows.empty:
@@ -44,15 +51,15 @@ if not selected_rows.empty:
 
     # Calcula e exibe o preço médio e desvio padrão com base nos dados da data mais recente
     avg_price_recent_date = df[df['day'] == df['day'].max()]['price'].mean()
-    std_dev_price_recent_date = df[df['day'] == df['day'].max()]['price'].std()
-    max_price = df[df['day'] == df['day'].max()]['price'].max()
-    min_price = df[df['day'] == df['day'].max()]['price'].min()
+    #std_dev_price_recent_date = df[df['day'] == df['day'].max()]['price'].std()
+    #max_price = df[df['day'] == df['day'].max()]['price'].max()
+    #min_price = df[df['day'] == df['day'].max()]['price'].min()
 
 
     st.sidebar.write(f'Average Price €: {avg_price_recent_date:.2f}')
-    st.sidebar.write(f'Standard Deviation €: {std_dev_price_recent_date:.2f}')
-    st.sidebar.write(f'Max Price €: {max_price:.2f}')
-    st.sidebar.write(f'Lower Price €: {min_price:.2f}')
+    #st.sidebar.write(f'Standard Deviation €: {std_dev_price_recent_date:.2f}')
+    #st.sidebar.write(f'Max Price €: {max_price:.2f}')
+    #st.sidebar.write(f'Lower Price €: {min_price:.2f}')
 
 
 
