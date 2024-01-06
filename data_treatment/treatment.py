@@ -128,4 +128,4 @@ def transformar_para_float(preco_str):
 # Aplicar a função à coluna 'price'
 df['price'] = df['price'].apply(transformar_para_float)
 
-df.to_csv('/home/the-lord/Documents/Europe-Real-Estate/app_streamlit/Processed_data.csv',index=False)
+df.to_csv('/home/the-lord/Documents/Europe-Real-Estate/Processed_data.csv',index=False)
