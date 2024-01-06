@@ -8,10 +8,10 @@ from urllib.parse import urlparse
 
 class RealEstate:
 
-    def __init__(self,district,max_pages):
+    def __init__(self,district):
         self.district = district
         self.page_number = 1  # Start from the first page
-        self.max_pages = max_pages-1  # Set the maximum number of pages
+        #self.max_pages = max_pages-1  # Set the maximum number of pages
         self.font_base = f'https://www.immobiliare.it/en/vendita-case/milano/{self.district}/?pag='
         self.driver = self.settings()
 
@@ -56,7 +56,11 @@ class RealEstate:
             soup = BeautifulSoup(page_html, 'html.parser')
             block = soup.find("main",attrs={"class":"in-listAndMapMain"}) # Mainly block to colect the data
             informations = block.find_all("div",attrs={"class":"nd-mediaObject__content in-reListCard__content is-spaced"}) # Block that contain informations
-            if not informations or self.page_number > self.max_pages:
+            n_pages = soup.find('div',attrs={"class":"in-pagination in-searchListMainContent__pagination"})
+            #print(n_pages)
+            n_page = list(n_pages.find('div',attrs={"class":"in-pagination__list"}))
+            page = n_page[-1].text
+            if not informations or self.page_number > (int(page)-1):
                 # Break the loop if there's no more data or reached the maximum pages
                 break
             for data in informations:
@@ -127,10 +131,10 @@ class RealEstate:
 
 if __name__=='__main__':
 
-    medaglie_d_oro = RealEstate('porta-romana-medaglie-d-oro',10)
+    medaglie_d_oro = RealEstate('porta-romana-medaglie-d-oro')
     medaglie_d_oro.collect_data()
     medaglie_d_oro.DataFrame()
 
-    cadore_montenero = RealEstate('porta-romana-cadore-montenero',17)
+    cadore_montenero = RealEstate('porta-romana-cadore-montenero')
     cadore_montenero.collect_data()
     cadore_montenero.DataFrame()
