@@ -68,11 +68,14 @@ def remove_square_meter(value):
     # Check if the value is a string
     if isinstance(value, str):
         # Remove "m²" and return the cleaned string
-        return value.replace('m²', '').strip()
+        cleaned_string = value.replace('m²', '').strip()
+        
+        # Convert the cleaned string to a float and return
+        return float(cleaned_string)
     else:
         # If the value is not a string (e.g., it's a float), return it as is
         return value
-
+    
 # Applying the function to the 'm2' column
 df['m2'] = df['m2'].apply(remove_square_meter)
       
@@ -128,4 +131,5 @@ def transformar_para_float(preco_str):
 # Aplicar a função à coluna 'price'
 df['price'] = df['price'].apply(transformar_para_float)
 
+df['m2-€'] = df['price']/df['m2']
 df.to_csv('/home/the-lord/Documents/Europe-Real-Estate/Processed_data.csv',index=False)
